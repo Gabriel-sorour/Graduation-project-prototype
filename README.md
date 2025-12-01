@@ -1,16 +1,59 @@
-# React + Vite
+# Smart Recipe Finder 🍳
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimalist, ingredient-first recipe application designed to help users cook with what they already have at home.
 
-Currently, two official plugins are available:
+# ✨ Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Smart Ingredient Search: Type ingredients (e.g., "Tomato", "Egg") to filter recipes instantly.
 
-## React Compiler
+User Dashboard: Manage your Virtual Pantry, Shopping List, and Favorites.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+AI Chef Bot: A conversational assistant for recipe suggestions and cooking tips.
 
-## Expanding the ESLint configuration
+Minimalist UI: Distraction-free design using a calming Sage Green palette.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# 🛠️ Tech Stack
+
+Frontend: React (Vite), Tailwind CSS, Lucide React.
+
+Backend: Laravel (API), MySQL.
+
+Authentication: Laravel Sanctum.
+
+# 🚀 Getting Started
+
+Prerequisites
+
+Node.js & npm
+
+PHP & Composer
+
+MySQL
+
+1. Backend Setup (Laravel)
+
+cd backend
+
+composer install
+
+cp .env.example .env
+
+* Configure your database settings in .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+
+
+2. Frontend Setup (React)
+
+cd frontend
+
+npm install
+
+* Ensure the API URL in your config matches the Laravel server
+npm run dev
+
+
+📄 License
+
+This project is open-source and available under the MIT License.
