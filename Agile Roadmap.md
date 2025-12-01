@@ -77,3 +77,14 @@
         Update GET /recipes to accept query parameters (e.g., ?category=dinner&time=30).
 
         Create GET /recipes/trending (Logic to return top 5 recipes).
+
+# + Admin dashboard
+
+# Future Roadmap (Post-MVP)
+Dietary Filters: Add toggles for Vegan, Gluten-Free, and Keto.
+
+Pantry Auto-Match: Automatically highlight recipes where the user has 100% of the ingredients in their Virtual Pantry.
+
+Community Reviews: Allow users to rate recipes and leave comments.
+
+Meal Planner: A calendar view to drag-and-drop recipes for the week.
