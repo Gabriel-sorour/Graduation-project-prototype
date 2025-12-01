@@ -326,7 +326,7 @@ const RecipeDetail = ({ id, goBack, isLoggedIn, promptLogin }) => {
   );
 };
 
-const Dashboard = ({ isLoggedIn, promptLogin }) => {
+const Dashboard = ({ isLoggedIn, promptLogin, setView }) => {
   const [activeTab, setActiveTab] = useState('pantry');
 
   if (!isLoggedIn) {
@@ -414,9 +414,34 @@ const Dashboard = ({ isLoggedIn, promptLogin }) => {
            )}
            
            {activeTab === 'favorites' && (
-              <div className="text-center py-20 text-gray-400">
-                <Heart size={48} className="mx-auto mb-4 text-gray-200" />
-                <p>Your favorite recipes will appear here.</p>
+              <div>
+                <h2 className="text-xl font-medium text-gray-800 mb-6">My Favorites</h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {MOCK_USER.favorites.map(favId => {
+                    const recipe = RECIPES.find(r => r.id === favId);
+                    if (!recipe) return null;
+                    return (
+                      <div key={recipe.id} onClick={() => setView && setView(`recipe-${recipe.id}`)} className="flex gap-4 p-4 rounded-xl border border-gray-100 hover:border-emerald-200 transition bg-white cursor-pointer group">
+                        <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                          <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                        </div>
+                        <div className="flex-1 py-1">
+                          <h3 className="font-medium text-gray-900 mb-1">{recipe.title}</h3>
+                          <div className="text-xs text-gray-500 flex gap-3">
+                             <span className="flex items-center gap-1"><Clock size={12}/> {recipe.time}</span>
+                             <span className="flex items-center gap-1"><Flame size={12}/> {recipe.calories}</span>
+                          </div>
+                        </div>
+                        <button className="text-emerald-500 hover:text-emerald-700 self-center p-2"><Heart size={20} fill="currentColor" /></button>
+                      </div>
+                    );
+                  })}
+                  {MOCK_USER.favorites.length === 0 && (
+                     <div className="text-center py-10 text-gray-400">
+                         <p>No favorites yet.</p>
+                     </div>
+                  )}
+                </div>
               </div>
            )}
         </div>
@@ -454,14 +479,14 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
 
 const App = () => {
   const [view, setView] = useState('home'); // home, explore, recipe-ID, dashboard
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Simple router logic
   const renderView = () => {
     if (view === 'home') return <Hero setView={setView} />;
     if (view === 'explore') return <Explore setView={setView} />;
-    if (view === 'dashboard') return <Dashboard isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} />;
+    if (view === 'dashboard') return <Dashboard isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} setView={setView} />;
     if (view.startsWith('recipe-')) {
       const id = view.split('-')[1];
       return <RecipeDetail id={id} goBack={() => setView('explore')} isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} />;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, ChefHat, Clock, Flame, Heart, ShoppingBag, X, User, ChevronRight, Menu, Home, LogOut, LayoutDashboard, Plus } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, ChefHat, Clock, Flame, Heart, ShoppingBag, X, User, ChevronRight, Menu, Home, LogOut, LayoutDashboard, Plus, MessageCircle, Send, Bot } from 'lucide-react';
 
 // --- Mock Data ---
 const RECIPES = [
@@ -69,6 +69,9 @@ const Navbar = ({ setView, isLoggedIn, setIsLoggedIn, setShowLoginModal, current
     <div className="hidden md:flex gap-8 text-sm font-medium text-gray-500">
       <button onClick={() => setView('home')} className={`hover:text-emerald-600 transition ${currentView === 'home' ? 'text-emerald-600' : ''}`}>Home</button>
       <button onClick={() => setView('explore')} className={`hover:text-emerald-600 transition ${currentView === 'explore' ? 'text-emerald-600' : ''}`}>Explore Recipes</button>
+      <button onClick={() => setView('chat')} className={`hover:text-emerald-600 transition flex items-center gap-1 ${currentView === 'chat' ? 'text-emerald-600' : ''}`}>
+         Chef Bot <Bot size={16} />
+      </button>
       <button onClick={() => setView('dashboard')} className={`hover:text-emerald-600 transition ${currentView === 'dashboard' ? 'text-emerald-600' : ''}`}>Dashboard</button>
     </div>
 
@@ -250,6 +253,152 @@ const Explore = ({ setView }) => {
   );
 };
 
+const ChatAssistant = ({ setView }) => {
+  const [messages, setMessages] = useState([
+    { id: 1, text: "Hello! I'm Chef Bot 🤖. Tell me what ingredients you have, or ask me for a recipe recommendation!", sender: 'bot' }
+  ]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const generateResponse = (userText) => {
+    const lowerText = userText.toLowerCase();
+    
+    // Check for ingredients matching our recipes
+    const foundIngredients = [];
+    RECIPES.forEach(recipe => {
+      recipe.ingredients.forEach(ing => {
+        if (lowerText.includes(ing.toLowerCase())) {
+          foundIngredients.push({ ing, recipe });
+        }
+      });
+    });
+
+    if (foundIngredients.length > 0) {
+      const match = foundIngredients[0];
+      return {
+        text: `I see you have ${match.ing}! That would be perfect for "${match.recipe.title}". Would you like to see the recipe?`,
+        recipeId: match.recipe.id
+      };
+    }
+
+    if (lowerText.includes('hello') || lowerText.includes('hi')) {
+      return { text: "Hi there! Ready to cook something delicious?" };
+    }
+    
+    if (lowerText.includes('hungry') || lowerText.includes('recommend')) {
+      const randomRecipe = RECIPES[Math.floor(Math.random() * RECIPES.length)];
+      return { 
+        text: `How about making "${randomRecipe.title}"? It takes about ${randomRecipe.time}.`,
+        recipeId: randomRecipe.id
+      };
+    }
+
+    if (lowerText.includes('thank')) {
+      return { text: "You're welcome! Happy cooking! 🍳" };
+    }
+
+    return { text: "I'm not sure about that, but I can help you find recipes based on ingredients like Chicken, Tomato, or Eggs!" };
+  };
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMessage = { id: Date.now(), text: input, sender: 'user' };
+    setMessages(prev => [...prev, userMessage]);
+    setInput("");
+    setIsTyping(true);
+
+    // Simulate AI delay
+    setTimeout(() => {
+      const response = generateResponse(userMessage.text);
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: response.text, sender: 'bot', recipeId: response.recipeId }]);
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
+        
+        {/* Chat Header */}
+        <div className="p-4 border-b border-gray-100 bg-emerald-50/50 flex items-center gap-3">
+          <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
+            <Bot size={20} />
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900">Chef Bot</h3>
+            <p className="text-xs text-gray-500">Always here to help</p>
+          </div>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50">
+          {messages.map(msg => (
+            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
+                msg.sender === 'user' 
+                  ? 'bg-emerald-600 text-white rounded-br-none' 
+                  : 'bg-white text-gray-700 border border-gray-200 rounded-bl-none shadow-sm'
+              }`}>
+                {msg.text}
+                {msg.recipeId && (
+                  <button 
+                    onClick={() => setView(`recipe-${msg.recipeId}`)}
+                    className="mt-3 w-full py-2 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-100 transition flex items-center justify-center gap-1"
+                  >
+                    View Recipe <ChevronRight size={12}/>
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          {isTyping && (
+            <div className="flex justify-start">
+               <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none border border-gray-200 shadow-sm flex gap-1">
+                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
+                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
+               </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask me for a recipe..."
+              className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition"
+            />
+            <button 
+              type="submit" 
+              className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!input.trim()}
+            >
+              <Send size={18} className={input.trim() ? "ml-1" : ""} />
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  );
+};
+
 const RecipeDetail = ({ id, goBack, isLoggedIn, promptLogin }) => {
   const recipe = RECIPES.find(r => r.id === parseInt(id));
 
@@ -326,7 +475,7 @@ const RecipeDetail = ({ id, goBack, isLoggedIn, promptLogin }) => {
   );
 };
 
-const Dashboard = ({ isLoggedIn, promptLogin }) => {
+const Dashboard = ({ isLoggedIn, promptLogin, setView }) => {
   const [activeTab, setActiveTab] = useState('pantry');
 
   if (!isLoggedIn) {
@@ -414,9 +563,34 @@ const Dashboard = ({ isLoggedIn, promptLogin }) => {
            )}
            
            {activeTab === 'favorites' && (
-              <div className="text-center py-20 text-gray-400">
-                <Heart size={48} className="mx-auto mb-4 text-gray-200" />
-                <p>Your favorite recipes will appear here.</p>
+              <div>
+                <h2 className="text-xl font-medium text-gray-800 mb-6">My Favorites</h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {MOCK_USER.favorites.map(favId => {
+                    const recipe = RECIPES.find(r => r.id === favId);
+                    if (!recipe) return null;
+                    return (
+                      <div key={recipe.id} onClick={() => setView && setView(`recipe-${recipe.id}`)} className="flex gap-4 p-4 rounded-xl border border-gray-100 hover:border-emerald-200 transition bg-white cursor-pointer group">
+                        <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                          <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                        </div>
+                        <div className="flex-1 py-1">
+                          <h3 className="font-medium text-gray-900 mb-1">{recipe.title}</h3>
+                          <div className="text-xs text-gray-500 flex gap-3">
+                             <span className="flex items-center gap-1"><Clock size={12}/> {recipe.time}</span>
+                             <span className="flex items-center gap-1"><Flame size={12}/> {recipe.calories}</span>
+                          </div>
+                        </div>
+                        <button className="text-emerald-500 hover:text-emerald-700 self-center p-2"><Heart size={20} fill="currentColor" /></button>
+                      </div>
+                    );
+                  })}
+                  {MOCK_USER.favorites.length === 0 && (
+                     <div className="text-center py-10 text-gray-400">
+                         <p>No favorites yet.</p>
+                     </div>
+                  )}
+                </div>
               </div>
            )}
         </div>
@@ -453,15 +627,16 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
 }
 
 const App = () => {
-  const [view, setView] = useState('home'); // home, explore, recipe-ID, dashboard
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [view, setView] = useState('home'); // home, explore, recipe-ID, dashboard, chat
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Simple router logic
   const renderView = () => {
     if (view === 'home') return <Hero setView={setView} />;
     if (view === 'explore') return <Explore setView={setView} />;
-    if (view === 'dashboard') return <Dashboard isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} />;
+    if (view === 'dashboard') return <Dashboard isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} setView={setView} />;
+    if (view === 'chat') return <ChatAssistant setView={setView} />;
     if (view.startsWith('recipe-')) {
       const id = view.split('-')[1];
       return <RecipeDetail id={id} goBack={() => setView('explore')} isLoggedIn={isLoggedIn} promptLogin={() => setShowLoginModal(true)} />;
@@ -474,13 +649,13 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 selection:bg-emerald-100 selection:text-emerald-900 pb-20 md:pb-0">
       <Navbar 
         setView={setView} 
         isLoggedIn={isLoggedIn} 
         setIsLoggedIn={setIsLoggedIn} 
         setShowLoginModal={setShowLoginModal}
-        currentView={view.split('-')[0]} // handle recipe-1 as 'recipe'
+        currentView={view.split('-')[0]} 
       />
       
       <main className="animate-in fade-in duration-300">
@@ -492,6 +667,16 @@ const App = () => {
         onClose={() => setShowLoginModal(false)} 
         onLogin={handleLogin}
       />
+
+      {/* Floating Chat Button (Mobile/Global) */}
+      {view !== 'chat' && (
+        <button 
+          onClick={() => setView('chat')}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-xl hover:bg-emerald-700 transition flex items-center justify-center z-40 md:hidden"
+        >
+          <MessageCircle size={24} />
+        </button>
+      )}
     </div>
   );
 };
