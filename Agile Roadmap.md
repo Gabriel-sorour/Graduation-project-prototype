@@ -20,11 +20,13 @@
 
         Create GET /recipes/:id (Get single recipe details).
 
-# Sprint 2: User Tools (Dashboard & Chat)
+# Sprint 2: User Tools (Dashboard, Chat & Search)
 
-    Goal: Create the personal workspace for the user (Pantry, Lists, Bot).
+    Goal: Create the personal workspace for the user and enable ingredient-based search.
 
     Frontend:
+
+        Build Explore Page (Search Bar & Results Grid).
 
         Build Dashboard UI with tabs (Pantry, Shopping List, Favorites).
 
@@ -35,6 +37,8 @@
     Backend:
 
         Define JSON data structure for User.
+
+        Create POST /recipes/search (Search recipes by ingredients).
 
         Create GET /user/pantry & POST /user/pantry (Manage items).
 
