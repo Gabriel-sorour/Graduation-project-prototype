@@ -30,7 +30,7 @@
 
         Build Dashboard UI with tabs (Pantry, Shopping List, Favorites).
 
-        Implement "Add/Remove" logic for Pantry items (local state for now).
+        Implement "Autocomplete" logic for adding Pantry items.
 
         Build Chatbot UI (Message bubble, input field, auto-scroll).
 
@@ -38,9 +38,11 @@
 
         Define JSON data structure for User.
 
-        Create POST /recipes/search (Search recipes by ingredients).
+        Create GET /ingredients (Return list of all ingredients for Autocomplete).
 
-        Create GET /user/pantry & POST /user/pantry (Manage items).
+        Create POST /recipes/search (Search recipes by ingredients list).
+
+        Create GET /user/pantry & POST /user/pantry (Manage user's pantry).
 
         Create POST /chat (Endpoint to receive message and return bot response).
 
