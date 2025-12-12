@@ -1,72 +1,96 @@
-# Smart Recipe Finder - API Documentation v1.0
+# Smart Recipe Finder - API Documentation (v1.0)
 
-This document outlines the API Endpoints provided by the Backend for the Frontend application.
-All data sent and received is formatted as JSON.
+This document describes all API endpoints used by the Smart Recipe Finder frontend.  
+All requests and responses use **JSON** format.
 
-Base URL: http://your-domain.com/api (or http://localhost:8000/api during development)
+---
 
-1. Authentication
+## 🔗 Base URL
+```
+http://your-domain.com/api
+```
+During development:
+```
+http://localhost:8000/api
+```
 
-Laravel Sanctum is used for authentication. The Token must be sent in the Header for protected requests:
+---
+
+# 1. 🔐 Authentication (Laravel Sanctum)
+
+Authentication for protected routes uses **Bearer Token**:
+
+```
 Authorization: Bearer <your_token_here>
+```
 
-Register (New User)
+---
 
-Endpoint: /register
+## 📝 Register (Create New User)
 
-Method: POST
+**Endpoint:** `/register`  
+**Method:** `POST`
 
-Body:
-
+### Request Body
+```json
 {
   "name": "Ahmed Ali",
   "email": "ahmed@example.com",
   "password": "password123",
   "password_confirmation": "password123"
 }
+```
 
-
-Response (201 Created):
-
+### Response (201 Created)
+```json
 {
   "message": "User registered successfully",
   "token": "1|laravel_sanctum_token_string...",
-  "user": { "id": 1, "name": "Ahmed Ali", "email": "ahmed@example.com" }
+  "user": {
+    "id": 1,
+    "name": "Ahmed Ali",
+    "email": "ahmed@example.com"
+  }
 }
+```
 
+---
 
-Login
+## 🔑 Login
 
-Endpoint: /login
+**Endpoint:** `/login`  
+**Method:** `POST`
 
-Method: POST
-
-Body:
-
+### Request Body
+```json
 {
   "email": "ahmed@example.com",
   "password": "password123"
 }
+```
 
-
-Response (200 OK):
-
+### Response (200 OK)
+```json
 {
   "token": "2|new_token_string...",
-  "user": { "id": 1, "name": "Ahmed Ali" }
+  "user": {
+    "id": 1,
+    "name": "Ahmed Ali"
+  }
 }
+```
 
+---
 
-2. Recipes
+# 2. 🍽 Recipes
 
-Get All Recipes (Home Page)
+## 📌 Get All Recipes (Home Page)
 
-Endpoint: /recipes
+**Endpoint:** `/recipes`  
+**Method:** `GET`
 
-Method: GET
-
-Response (200 OK):
-
+### Response (200 OK)
+```json
 {
   "data": [
     {
@@ -77,47 +101,47 @@ Response (200 OK):
       "difficulty_level": "Easy",
       "calories": 280
     }
-    // ... more recipes
   ]
 }
+```
 
+---
 
-Search by Ingredients (Core Feature)
+## 🔍 Search by Ingredients
 
-Endpoint: /recipes/search
+**Endpoint:** `/recipes/search`  
+**Method:** `POST`
 
-Method: POST (Using POST to easily send an array of tags)
-
-Body:
-
+### Request Body
+```json
 {
   "tags": ["Tomato", "Garlic", "Cream"]
 }
+```
 
-
-Response (200 OK):
-
+### Response (200 OK)
+```json
 {
   "data": [
     {
       "id": 1,
       "title": "Roasted Tomato Soup",
-      "matches": 3, // (Optional) Number of matching ingredients
-      "missing_ingredients": 1 // (Optional) Number of missing ingredients
-      // ... other recipe summary details
+      "matches": 3,
+      "missing_ingredients": 1
     }
   ]
 }
+```
 
+---
 
-Get Recipe Details
+## 📄 Get Recipe Details
 
-Endpoint: /recipes/{id}
+**Endpoint:** `/recipes/{id}`  
+**Method:** `GET`
 
-Method: GET
-
-Response (200 OK):
-
+### Response (200 OK)
+```json
 {
   "id": 1,
   "title": "Roasted Tomato Soup",
@@ -130,75 +154,92 @@ Response (200 OK):
     { "step_order": 2, "instruction_text": "Blend with garlic." }
   ]
 }
+```
 
+---
 
-3. User Profile (Protected - Requires Token)
+# 3. 👤 User Profile (Protected Endpoints)
 
-1. Favorites
+---
 
-Add to Favorites:
+## ⭐ Favorites
 
-POST /favorites
+### ➕ Add to Favorites  
+**POST** `/favorites`
 
-Body: { "recipe_id": 1 }
+**Body:**
+```json
+{ "recipe_id": 1 }
+```
 
-Remove from Favorites:
+### ❌ Remove Favorite  
+**DELETE** `/favorites/{recipe_id}`
 
-DELETE /favorites/{recipe_id}
+### 📥 Get All Favorites  
+**GET** `/favorites`
 
-Get User Favorites:
+---
 
-GET /favorites
+## 🧺 Virtual Pantry
 
-2. Virtual Pantry
+### 📥 Get Pantry Items  
+**GET** `/pantry`
 
-Get Pantry Items:
+### ➕ Add Item  
+**POST** `/pantry`  
+**Body:**
+```json
+{ "item_name": "Rice" }
+```
 
-GET /pantry
+### ❌ Delete Item  
+**DELETE** `/pantry/{id}`
 
-Add Item:
+---
 
-POST /pantry
+## 🛒 Shopping List
 
-Body: { "item_name": "Rice" } (You can also send ingredient_id if available)
+### 📥 Get List  
+**GET** `/shopping-list`
 
-Delete Item:
+### ➕ Add Item  
+**POST** `/shopping-list`  
+**Body:**
+```json
+{
+  "item_name": "Milk",
+  "source_recipe_id": 2
+}
+```
 
-DELETE /pantry/{id}
+### ☑️ Toggle Check (Mark as Bought)  
+**PATCH** `/shopping-list/{id}`  
+**Body:**
+```json
+{ "is_checked": true }
+```
 
-3. Shopping List
+### ❌ Delete Item  
+**DELETE** `/shopping-list/{id}`
 
-Get List:
+---
 
-GET /shopping-list
+# 4. ⚠️ Error Handling
 
-Add Item:
+## 401: Unauthorized  
+Used when token is missing or invalid.
 
-POST /shopping-list
-
-Body: { "item_name": "Milk", "source_recipe_id": 2 } (source_recipe_id is optional)
-
-Toggle Check (Mark as Bought):
-
-PATCH /shopping-list/{id}
-
-Body: { "is_checked": true }
-
-Delete Item:
-
-DELETE /shopping-list/{id}
-
-4. Error Handling
-
-In case of an error, please return a consistent structure:
-
-401 Unauthorized: (When the token has expired or is invalid)
-
-422 Validation Error: (When input data is invalid)
-
+## 422: Validation Error  
+```json
 {
   "message": "The given data was invalid.",
   "errors": {
     "email": ["The email has already been taken."]
   }
 }
+```
+
+---
+
+# 📌 Version  
+**API v1.0**
