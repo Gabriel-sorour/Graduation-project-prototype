@@ -1,24 +1,23 @@
-# Smart Recipe Finder - API Documentation (v1.0)
+# Smart Recipe Finder - API Documentation (v1.1)
 
 This document describes all API endpoints used by the Smart Recipe Finder frontend.  
-All requests and responses use **JSON** format.
+All requests and responses use JSON format.
 
 ---
 
-## 🔗 Base URL
+## Base URL
+
 ```
-http://your-domain.com/api
+http://127.0.0.1:8000/api
 ```
-During development:
-```
-http://localhost:8000/api
-```
+
+> Note: Since authentication is not implemented yet, for all protected endpoints (Favorites, Pantry, Chat), please hardcode logic to use `user_id = 1` temporarily.
 
 ---
 
-# 1. 🔐 Authentication (Laravel Sanctum)
+# 1. Authentication
 
-Authentication for protected routes uses **Bearer Token**:
+Authentication for protected routes uses Bearer Token:
 
 ```
 Authorization: Bearer <your_token_here>
@@ -26,10 +25,9 @@ Authorization: Bearer <your_token_here>
 
 ---
 
-## 📝 Register (Create New User)
+## Register (Create New User)
 
-**Endpoint:** `/register`  
-**Method:** `POST`
+**Endpoint:** `POST http://127.0.0.1:8000/api/auth/register`
 
 ### Request Body
 ```json
@@ -56,10 +54,9 @@ Authorization: Bearer <your_token_here>
 
 ---
 
-## 🔑 Login
+## Login
 
-**Endpoint:** `/login`  
-**Method:** `POST`
+**Endpoint:** `POST http://127.0.0.1:8000/api/auth/login`
 
 ### Request Body
 ```json
@@ -82,12 +79,11 @@ Authorization: Bearer <your_token_here>
 
 ---
 
-# 2. 🍽 Recipes
+# 2. Recipes & Discovery
 
-## 📌 Get All Recipes (Home Page)
+## Get All Recipes (Home Page)
 
-**Endpoint:** `/recipes`  
-**Method:** `GET`
+**Endpoint:** `GET http://127.0.0.1:8000/api/recipes`
 
 ### Response (200 OK)
 ```json
@@ -107,15 +103,27 @@ Authorization: Bearer <your_token_here>
 
 ---
 
-## 🔍 Search by Ingredients
+## Get All Ingredients (For Autocomplete)
 
-**Endpoint:** `/recipes/search`  
-**Method:** `POST`
+**Endpoint:** `GET http://127.0.0.1:8000/api/ingredients`
+
+### Response (200 OK)
+```json
+{
+  "data": ["Tomato", "Egg", "Milk", "Cheese", "Chicken", "Rice"]
+}
+```
+
+---
+
+## Search by Ingredients (Multi-select)
+
+**Endpoint:** `POST http://127.0.0.1:8000/api/recipes/search`
 
 ### Request Body
 ```json
 {
-  "tags": ["Tomato", "Garlic", "Cream"]
+  "ingredients": ["Tomato", "Egg"] 
 }
 ```
 
@@ -125,9 +133,9 @@ Authorization: Bearer <your_token_here>
   "data": [
     {
       "id": 1,
-      "title": "Roasted Tomato Soup",
-      "matches": 3,
-      "missing_ingredients": 1
+      "title": "Tomato Omelette",
+      "matches": 2,
+      "missing_ingredients": 0
     }
   ]
 }
@@ -135,101 +143,112 @@ Authorization: Bearer <your_token_here>
 
 ---
 
-## 📄 Get Recipe Details
+## Get Recipe Details
 
-**Endpoint:** `/recipes/{id}`  
-**Method:** `GET`
+**Endpoint:** `GET http://127.0.0.1:8000/api/recipes/{id}`
 
 ### Response (200 OK)
 ```json
 {
   "id": 1,
   "title": "Roasted Tomato Soup",
+  "image": "http://...",
+  "time": "30 min",
+  "calories": "200 kcal",
+  "difficulty": "Easy",
   "ingredients": [
-    { "name": "Tomato", "quantity": "5 pcs" },
-    { "name": "Garlic", "quantity": "2 cloves" }
+    "Tomato", "Garlic", "Cream"
   ],
   "steps": [
-    { "step_order": 1, "instruction_text": "Roast the tomatoes." },
-    { "step_order": 2, "instruction_text": "Blend with garlic." }
+    "Roast the tomatoes.",
+    "Blend with garlic."
   ]
 }
 ```
 
 ---
 
-# 3. 👤 User Profile (Protected Endpoints)
+# 3. AI Chatbot (Sage Bot)
 
----
+## Send Message
 
-## ⭐ Favorites
+**Endpoint:** `POST http://127.0.0.1:8000/api/chat`
 
-### ➕ Add to Favorites  
-**POST** `/favorites`
-
-**Body:**
+### Request Body
 ```json
-{ "recipe_id": 1 }
+{
+  "message": "What can I cook with Egg and Cheese?"
+}
 ```
 
-### ❌ Remove Favorite  
-**DELETE** `/favorites/{recipe_id}`
-
-### 📥 Get All Favorites  
-**GET** `/favorites`
+### Response (200 OK)
+```json
+{
+  "reply": "You can make a delicious Cheese Omelette! Here is the recipe..."
+}
+```
 
 ---
 
-## 🧺 Virtual Pantry
+# 4. User Profile (Protected Endpoints)
 
-### 📥 Get Pantry Items  
-**GET** `/pantry`
+## Virtual Pantry
 
-### ➕ Add Item  
-**POST** `/pantry`  
-**Body:**
+### Get Pantry Items
+**Endpoint:** `GET http://127.0.0.1:8000/api/user/pantry`
+
+### Add Item
+**Endpoint:** `POST http://127.0.0.1:8000/api/user/pantry`
 ```json
 { "item_name": "Rice" }
 ```
 
-### ❌ Delete Item  
-**DELETE** `/pantry/{id}`
+### Delete Item
+**Endpoint:** `DELETE http://127.0.0.1:8000/api/user/pantry/{id}`
 
 ---
 
-## 🛒 Shopping List
+## Favorites
 
-### 📥 Get List  
-**GET** `/shopping-list`
-
-### ➕ Add Item  
-**POST** `/shopping-list`  
-**Body:**
+### Add to Favorites
+**Endpoint:** `POST http://127.0.0.1:8000/api/user/favorites`
 ```json
-{
-  "item_name": "Milk",
-  "source_recipe_id": 2
-}
+{ "recipe_id": 1 }
 ```
 
-### ☑️ Toggle Check (Mark as Bought)  
-**PATCH** `/shopping-list/{id}`  
-**Body:**
+### Remove Favorite
+**Endpoint:** `DELETE http://127.0.0.1:8000/api/user/favorites/{recipe_id}`
+
+### Get All Favorites
+**Endpoint:** `GET http://127.0.0.1:8000/api/user/favorites`
+
+---
+
+## Shopping List
+
+### Get List
+**Endpoint:** `GET http://127.0.0.1:8000/api/user/shopping-list`
+
+### Add Item
+**Endpoint:** `POST http://127.0.0.1:8000/api/user/shopping-list`
+```json
+{ "item_name": "Milk" }
+```
+
+### Toggle Check (Mark as Bought)
+**Endpoint:** `PATCH http://127.0.0.1:8000/api/user/shopping-list/{id}`
 ```json
 { "is_checked": true }
 ```
 
-### ❌ Delete Item  
-**DELETE** `/shopping-list/{id}`
-
 ---
 
-# 4. ⚠️ Error Handling
+# 5. Error Handling
 
-## 401: Unauthorized  
+## 401: Unauthorized
 Used when token is missing or invalid.
 
-## 422: Validation Error  
+## 422: Validation Error
 ```json
 {
   "message": "The given data was invalid.",
@@ -241,5 +260,6 @@ Used when token is missing or invalid.
 
 ---
 
-# 📌 Version  
-**API v1.0**
+# Version
+
+**API v1.1**
