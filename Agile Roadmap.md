@@ -90,6 +90,8 @@
 
 Numbers of the pantry ingredients and also recipe ingredients
 
+Chatbot message contain a recipe card
+
 Dietary Filters: Add toggles for Vegan, Gluten-Free, and Keto.
 
 Pantry Auto-Match: Automatically highlight recipes where the user has 100% of the ingredients in their Virtual Pantry.
