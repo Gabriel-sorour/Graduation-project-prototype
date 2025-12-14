@@ -1,101 +1,97 @@
-# Sprint 1: Core Architecture & Recipe Display
+## Sprint 1: Core Architecture & Recipe Display (Completed)
 
-    Goal: Establish the project foundation and allow users to view recipes.
+**Goal:** Establish the project foundation and allow users to view recipes.
 
-    Frontend:
+- **Frontend**
+  - Initialize Project
+  - Global Layout
+  - Home Page
+  - Recipe Detail Page
 
-        Initialize React project & CSS folder structure.
+- **Backend**
+  - Recipe Schema
+  - GET /recipes
+  - GET /recipes/:id
 
-        Create Global Layout (Header/Navbar).
+---
 
-        Build Home Page (Hero section + Basic Recipe Grid).
+## Sprint 2: User Tools UI & Search (Completed)
 
-        Build Recipe Detail Page (Ingredients, steps, image).
+**Goal:** Create the visual workspace and enable ingredient-based search (UI Focus).
 
-    Backend:
+- **Frontend**
+  - Explore Page (UI)
+  - Dashboard Layout  
+    - Pantry UI  
+    - Shopping List UI  
+    - Favorites UI
+  - Chatbot Widget (UI + Basic API)
 
-        Define JSON data structure for Recipe.
+- **Backend**
+  - Ingredients API
+  - Search Logic
+  - Chat API Endpoint
 
-        Create GET /recipes (List all recipes).
+---
 
-        Create GET /recipes/:id (Get single recipe details).
+## Sprint 3: Interactive Dashboard (Functional Logic)
 
-# Sprint 2: User Tools (Dashboard, Chat & Search)
+**Goal:** Make the Dashboard fully functional (Shopping List & Favorites) using a **Dummy User (ID=1)**.
 
-    Goal: Create the personal workspace for the user and enable ingredient-based search.
+### Frontend
+- **Shopping List Integration:** Connect API to Add/Remove items and mark as bought
+- **Favorites Logic:** Implement "Heart" toggle functionality on Recipe Cards to save/remove favorites
+- **Pantry Logic:** Finalize the Add/Remove ingredients connection with the backend
+- **UI Feedback:** Implement Toast Notifications (e.g., "Added to Shopping List")
 
-    Frontend:
+### Backend
+- **Shopping List Endpoints:** Create GET/POST/DELETE `/shopping-list` (Using hardcoded User ID)
+- **Favorites Endpoints:** Create POST/DELETE `/favorites` (Using hardcoded User ID)
+- **Pantry Endpoints:** Finalize GET/POST/DELETE `/pantry` logic
 
-        Build Explore Page (Search Bar & Results Grid).
+---
 
-        Build Dashboard UI with tabs (Pantry, Shopping List, Favorites).
+## Sprint 4: Authentication & Security
 
-        Implement "Autocomplete" logic for adding Pantry items.
+**Goal:** Secure the application, replace Dummy User with real users, and manage sessions.
 
-        Build Chatbot UI (Message bubble, input field, auto-scroll).
+### Frontend
+- **Auth Pages:** Build Login Page and Register Page forms
+- **Auth Context:** Implement Global State to store Token & User Info
+- **Protected Routes:** Redirect unauthenticated users from Dashboard
+- **Refactor:** Switch API calls from "Dummy User" to use the dynamic Auth Token
 
-    Backend:
+### Backend
+- **Auth Endpoints:** Create `/auth/register` and `/auth/login`
+- **Middleware:** Implement Sanctum/JWT Middleware to protect Dashboard endpoints
+- **User Association:** Update Controllers to use `Auth::id()` instead of hardcoded ID
 
-        Define JSON data structure for User.
+---
 
-        Create GET /ingredients (Return list of all ingredients for Autocomplete).
+## Sprint 5: Enhancements & Polish
 
-        Create POST /recipes/search (Search recipes by ingredients list).
+**Goal:** Add advanced discovery features and static information.
 
-        Create GET /user/pantry & POST /user/pantry (Manage user's pantry).
+### Frontend
+- **Advanced Filtering:** Add Filter UI on Explore page (Categories, Time, Difficulty)
+- **Trending Section:** Implement horizontal scroll on Home Page
+- **Footer:** Add static pages (About Us, Contact)
 
-        Create POST /chat (Endpoint to receive message and return bot response).
+### Backend
+- **Query Params:** Update GET /recipes to support filters (e.g., `?category=dinner`)
+- **Trending Logic:** Create GET /recipes/trending endpoint
 
-# Sprint 3: Authentication (Login & Register)
+---
 
-    Goal: Secure the application and manage user sessions.
+## + Admin Dashboard
 
-    Frontend:
+---
 
-        Build Login Page and Register Page forms.
+## Future Roadmap (Post-MVP)
 
-        Create Authentication Context (to save the logged-in user state globally).
-
-        Implement Protected Routes (redirect users from Dashboard if not logged in).
-
-    Backend:
-
-        Create POST /auth/register (Create new user).
-
-        Create POST /auth/login (Verify credentials & return token).
-
-        Implement Middleware to protect Dashboard endpoints.
-
-# Sprint 4: Enhancements & Polish
-
-    Goal: Add advanced discovery features and static information.
-
-    Frontend:
-
-        Add Filter UI on Explore page (Categories, Time, Difficulty).
-
-        Add Trending Section on Home Page (Horizontal scroll).
-
-        Add Footer (About Us, Contact).
-
-    Backend:
-
-        Update GET /recipes to accept query parameters (e.g., ?category=dinner&time=30).
-
-        Create GET /recipes/trending (Logic to return top 5 recipes).
-
-# + Admin dashboard
-
-# Future Roadmap (Post-MVP)
-
-Numbers of the pantry ingredients and also recipe ingredients
-
-Chatbot message contain a recipe card
-
-Dietary Filters: Add toggles for Vegan, Gluten-Free, and Keto.
-
-Pantry Auto-Match: Automatically highlight recipes where the user has 100% of the ingredients in their Virtual Pantry.
-
-Community Reviews: Allow users to rate recipes and leave comments.
-
-Meal Planner: A calendar view to drag-and-drop recipes for the week.
+- **Smart Chat:** Chatbot message contains a renderable Recipe Card
+- **Dietary Filters:** Toggles for Vegan, Gluten-Free, Keto
+- **Pantry Auto-Match:** Highlight recipes where user has 100% ingredients
+- **Community Reviews:** Rate and comment on recipes
+- **Meal Planner:** Drag-and-drop calendar view
+- **Counters:** Display numbers of ingredients in Pantry/Recipe details
