@@ -36,18 +36,22 @@
 
 ## Sprint 3: Interactive Dashboard (Functional Logic)
 
-**Goal:** Make the Dashboard fully functional (Shopping List & Favorites) using a **Dummy User (ID=1)**.
+**Goal:** Make the Dashboard fully functional (Shopping List, Pantry & Favorites) using a **Dummy User (ID=1)**.
 
 ### Frontend
-- **Shopping List Integration:** Connect API to Add/Remove items and mark as bought
+- **Shopping List Integration:** - Connect API to Add/Remove items
+  - Implement Toggle Status (Check/Uncheck items)
 - **Favorites Logic:** Implement "Heart" toggle functionality on Recipe Cards to save/remove favorites
 - **Pantry Logic:** Finalize the Add/Remove ingredients connection with the backend
 - **UI Feedback:** Implement Toast Notifications (e.g., "Added to Shopping List")
 
 ### Backend
-- **Shopping List Endpoints:** Create GET/POST/DELETE `/shopping-list` (Using hardcoded User ID)
-- **Favorites Endpoints:** Create POST/DELETE `/favorites` (Using hardcoded User ID)
-- **Pantry Endpoints:** Finalize GET/POST/DELETE `/pantry` logic
+- **Shopping List Endpoints:** - `GET /shopping-list`
+  - `POST /shopping-list`
+  - `DELETE /shopping-list/:id`
+  - `PATCH /shopping-list/:id` (For toggling is_checked status)
+- **Favorites Endpoints:** Create `POST` & `DELETE` `/favorites` (Using hardcoded User ID)
+- **Pantry Endpoints:** Finalize `GET`, `POST`, `DELETE` `/pantry` logic
 
 ---
 
